@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/4.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
-
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -23,9 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-8&(2(rizeuu74dxbdud0lv26h0u6bq@u0e_o3th8qocnbccy+='
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
+DEBUG = False
 
 
 # Application definition
@@ -41,7 +39,7 @@ INSTALLED_APPS = [
     'statify_api.apps.StatifyApiConfig',
     'statify_frontend.apps.StatifyFrontendConfig',
     'rest_framework',
-    'spotify.apps.SpotifyConfig'
+    'spotify.apps.SpotifyConfig',
 ]
 
 MIDDLEWARE = [
@@ -53,7 +51,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.common.CommonMiddleware'
+    'django.middleware.common.CommonMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware'
 ]
 
 ROOT_URLCONF = 'Statify.urls'
@@ -84,11 +83,11 @@ WSGI_APPLICATION = 'Statify.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'statify',
-        'USER': 'postgres',
-        'PASSWORD': 'root',
-        'HOST': '127.0.0.1',
-        'PORT': '5433',
+        'NAME': 'd98rh2bhsp5lsr',
+        'USER': 'lqldslzegcfnbx',
+        'PASSWORD': 'bd1fa4dfa7544bebd2b9a63e9d58332178bbf8b7d4be5964c961da34d37ca981',
+        'HOST': 'ec2-54-247-96-153.eu-west-1.compute.amazonaws.com',
+        'PORT': '5432'
     }
 }
 
@@ -129,8 +128,19 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'build/static')
+]
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+CORS_ORIGIN_ALLOW_ALL = True
+
+ALLOWED_HOSTS = ['*']
