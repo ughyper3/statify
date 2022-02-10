@@ -1,1 +1,1 @@
-web: gunicorn Statify.wsgi --log-file -
+web: gunicorn Statify.wsgi
