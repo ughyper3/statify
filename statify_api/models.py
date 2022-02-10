@@ -25,8 +25,8 @@ class BaseModel(models.Model):
 
 
 class Song(BaseModel):
-    name = models.CharField(max_length=100, null=False, blank=False)
-    artist = models.CharField(max_length=100, null=False, blank=False)
+    name = models.CharField(max_length=1000, null=False, blank=False)
+    artist = models.CharField(max_length=1000, null=False, blank=False)
     played_at = models.DateTimeField(null=False, blank=False)
 
     def __str__(self):

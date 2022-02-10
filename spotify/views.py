@@ -3,7 +3,8 @@ import datetime
 from django.shortcuts import redirect
 
 from statify_api.models import Song
-from .utils import update_or_create_user_tokens, is_spotify_authenticated, execute_spotify_api_request
+from .utils import update_or_create_user_tokens, is_spotify_authenticated, execute_spotify_api_request, \
+    get_percentage_of_progression, date_parse
 from rest_framework import status
 from rest_framework.response import Response
 from .credentials import REDIRECT_URI, CLIENT_ID, CLIENT_SECRET
@@ -70,7 +71,9 @@ class RecentListenedSongs(APIView):
             songs_list.append({
                 'song_name': song['track']['name'],
                 'artist': song['track']['album']['artists'][0]['name'],
-                'played_at': song['played_at']
+                'played_at': song['played_at'],
+                'image': song['track']['album']['images'][0]['url'],
+                'format_date': date_parse(song['played_at'])
             })
 
         for song in songs_list:
@@ -78,7 +81,7 @@ class RecentListenedSongs(APIView):
                 insert_song = Song(name=song['song_name'], artist=song['artist'], played_at=song['played_at'])
                 insert_song.save()
 
-        return Response(songs_list, status=status.HTTP_200_OK)
+        return Response(songs_list[:10], status=status.HTTP_200_OK)
 
 
 class UserProfile(APIView):
@@ -89,7 +92,15 @@ class UserProfile(APIView):
         if 'error' in response:
             return Response({}, status=status.HTTP_204_NO_CONTENT)
 
-        return Response(response, status=status.HTTP_200_OK)
+        profile = {
+            'country': response['country'],
+            'display_name': response['display_name'],
+            'spotify_account': response['external_urls']['spotify'],
+            'followers': response['followers']['total'],
+            'image': response['images'][0]['url']
+        }
+
+        return Response(profile, status=status.HTTP_200_OK)
 
 
 class Playlist(APIView):
@@ -100,7 +111,16 @@ class Playlist(APIView):
         if 'error' in response:
             return Response({}, status=status.HTTP_204_NO_CONTENT)
 
-        return Response(response, status=status.HTTP_200_OK)
+        playlists = []
+
+        for playlist in response['items']:
+            playlists.append({
+                'name': playlist['name'],
+                'image': playlist['images'][0]['url'],
+                'link': playlist['external_urls']['spotify']
+            })
+
+        return Response(playlists, status=status.HTTP_200_OK)
 
 
 class CurrentlyPlayed(APIView):
@@ -111,4 +131,13 @@ class CurrentlyPlayed(APIView):
         if 'error' in response:
             return Response({}, status=status.HTTP_204_NO_CONTENT)
 
-        return Response(response, status=status.HTTP_200_OK)
+        current_song = {
+            'progress_ms': response['progress_ms'],
+            'song_name': response['item']['name'],
+            'artist_name': response['item']['album']['artists'][0]['name'],
+            'image': response['item']['album']['images'][0]['url'],
+            'duration_ms': response['item']['duration_ms']
+        }
+        current_song['percentage'] = get_percentage_of_progression(current_song['duration_ms'], current_song['progress_ms'])
+
+        return Response(current_song, status=status.HTTP_200_OK)

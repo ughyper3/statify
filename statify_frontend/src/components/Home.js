@@ -3,30 +3,16 @@ import Profile from "./Profile";
 import RecentlyListenedSong from "./RecentlyListenedSong";
 import CurrentlyPlayedSong from "./CurrentlyPlayed";
 import '@material-ui/core';
+import {AppBar, Avatar, Box, Container, CssBaseline, Grid, Toolbar, Typography} from "@material-ui/core";
+import Playlist from "./Playlist";
 
 
 export default class Home extends Component{
     constructor(props) {
         super(props);
-        this.state = {
-            spotifyAuthenticated: false,
-            songs: [],
-            profile:{},
-            currentlyPlayed:{}
-        };
+
         this.authenticateSpotify = this.authenticateSpotify.bind(this);
         this.authenticateSpotify();
-        this.getListenedSongs = this.getListenedSongs.bind(this);
-        this.getListenedSongs();
-        this.getProfile = this.getProfile.bind(this);
-        this.getProfile();
-        this.CurrentlyPlayedSong = this.CurrentlyPlayedSong.bind(this);
-        this.CurrentlyPlayedSong();
-    }
-
-    componentDidMount() {
-        this.interval = setInterval(this.getListenedSongs, 10000);
-        this.interv = setInterval(this.CurrentlyPlayedSong, 1000);
     }
 
     authenticateSpotify(){
@@ -44,55 +30,63 @@ export default class Home extends Component{
             })
     }
 
-    getListenedSongs(){
-        fetch('/spotify/recently-played-songs/')
-            .then((response) => {
-                if(!response.ok){
-                    return {};
-                }
-                else {
-                    return response.json();
-                }
-            })
-            .then((data) => {
-                this.setState({songs: data});
-            });
-    }
-
-    getProfile(){
-        fetch('/spotify/profile/')
-            .then((response) => {
-                if(!response.ok){
-                    return {};
-                }
-                else {
-                    return response.json();
-                }
-            })
-            .then((data) => {
-                this.setState({profile: data});
-            });
-    }
-
-    CurrentlyPlayedSong(){
-        fetch('/spotify/currently-played/')
-            .then((response) => {
-                if(!response.ok){
-                    return {};
-                }
-                else {
-                    return response.json();
-                }
-            })
-            .then((data) => {
-                this.setState({currentlyPlayed: data});
-            });
-    }
-
     render() {
+        const body = {
+            backgroundColor: '#191414'
+        }
+        const toolbar_style = {
+            backgroundColor: '#1E262F'
+        };
+        const title_style = {
+            fontSize: 40,
+            fontWeight: 500,
+            fontFamily: 'Montserrat'
+        };
+        const logo_style = {
+            width: 75,
+            height: 75,
+            margin: 10
+        }
         return (
-            <div>
-                <Profile profile={this.state.profile}/>
+            <div style={body}>
+                <CssBaseline>
+                    <AppBar position="static" color="primary">
+                        <Toolbar style={toolbar_style}>
+                            <Box mr={2}>
+                                <img style={logo_style} alt="img statify" src="/static/img/spotify.png"/>
+                            </Box>
+                            <Typography style={title_style}>
+                                Statify
+                            </Typography>
+                        </Toolbar>
+                    </AppBar>
+                    <main>
+                        <div style={{paddingTop: 30}}>
+                            <Container>
+                                <Grid container spacing={4}>
+                                    <Grid item md={8}>
+                                        <Grid container spacing={4}>
+                                            <Grid item md={6}>
+                                                <Profile/>
+                                            </Grid>
+                                            <Grid item md={6}>
+                                                <CurrentlyPlayedSong/>
+                                            </Grid>
+                                            <Grid item md={12}>
+                                                <Playlist/>
+                                            </Grid>
+                                        </Grid>
+                                    </Grid>
+                                    <Grid item md={4}>
+                                        <Grid container>
+                                            <RecentlyListenedSong/>
+                                        </Grid>
+                                    </Grid>
+                                </Grid>
+                            </Container>
+                        </div>
+                    </main>
+                </CssBaseline>
             </div>
         )
     }

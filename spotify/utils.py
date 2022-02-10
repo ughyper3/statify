@@ -88,3 +88,16 @@ def execute_spotify_api_request(session_id, endpoint, post_=False, put_=False):
         return response.json()
     except:
         return {'Error': "Issue with request"}
+
+
+def get_percentage_of_progression(duration, progress):
+    return progress / duration * 100
+
+
+def date_parse(date):
+    month = date[5:7]
+    day = date[8:10]
+    hour = date[11:13]
+    min = date[14:16]
+    concat = f"{day}/{month} - {hour}:{min}"
+    return concat
