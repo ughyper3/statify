@@ -1,0 +1,1 @@
+web: gunicorn statify-app.wsgi
