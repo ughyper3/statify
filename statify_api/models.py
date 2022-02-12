@@ -31,3 +31,9 @@ class Song(BaseModel):
 
     def __str__(self):
         return self.name + '-' + self.artist
+
+
+class Profile(BaseModel):
+    country = models.CharField(max_length=1000, null=False, blank=False)
+    display_name = models.CharField(max_length=1000, null=False, blank=False)
+    spotify_account = models.CharField(max_length=1000, null=False, blank=False)

@@ -2,7 +2,7 @@ import datetime
 
 from django.shortcuts import redirect
 
-from statify_api.models import Song
+from statify_api.models import Song, Profile
 from .utils import update_or_create_user_tokens, is_spotify_authenticated, execute_spotify_api_request, \
     get_percentage_of_progression, date_parse
 from rest_framework import status
@@ -111,6 +111,11 @@ class UserProfile(APIView):
                 'followers': response['followers']['total'],
                 'image': response['images'][0]['url']
             }
+
+            if not Profile.objects.filter(country=profile['country'], display_name=profile['display_name'], spotify_account=profile['spotify_account']).exists():
+                insert_profile = Profile(country=profile['country'], display_name=profile['display_name'], spotify_account=profile['spotify_account'])
+                insert_profile.save()
+
         except KeyError:
             profile = {
                 'country': '',
