@@ -1,3 +1,5 @@
-CLIENT_ID = 'a770f22a0f7e4745b205b6574ea0d1a6'
-CLIENT_SECRET = '67f07182ecf84bff847389d616fe4bfc'
+import os
+
+CLIENT_ID = os.environ['CLIENT_ID']
+CLIENT_SECRET = os.environ['CLIENT_SECRET']
 REDIRECT_URI = 'https://app-statify.herokuapp.com/spotify/redirect'
