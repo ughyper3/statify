@@ -20,7 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-8&(2(rizeuu74dxbdud0lv26h0u6bq@u0e_o3th8qocnbccy+='
+SECRET_KEY = os.environ['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
@@ -83,10 +83,10 @@ WSGI_APPLICATION = 'Statify.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'd98rh2bhsp5lsr',
-        'USER': 'lqldslzegcfnbx',
-        'PASSWORD': 'bd1fa4dfa7544bebd2b9a63e9d58332178bbf8b7d4be5964c961da34d37ca981',
-        'HOST': 'ec2-54-247-96-153.eu-west-1.compute.amazonaws.com',
+        'NAME': os.environ['NAME'],
+        'USER': os.environ['USER'],
+        'PASSWORD': os.environ['PASSWORD'],
+        'HOST': os.environ['HOST'],
         'PORT': '5432'
     }
 }

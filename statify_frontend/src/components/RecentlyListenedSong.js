@@ -30,7 +30,7 @@ export default class RecentlyListenedSong extends Component {
     getListenedSongs(){
         fetch('/spotify/recently-played-songs/')
             .then((response) => {
-                if(!response.ok){
+                if(!response.ok || response.i){
                     return {};
                 }
                 else {

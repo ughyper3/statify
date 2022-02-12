@@ -97,7 +97,7 @@ export default class CurrentlyPlayed extends Component {
                         <Grid container direction="column">
                             <Grid item xs={12}>
                                 <Grid container justifyContent="center">
-                                    <Avatar src={this.getImage() || 'https://issou'} style={imageStyle} variant="square"/>
+                                    <Avatar src={this.getImage()} style={imageStyle} variant="square"/>
                                 </Grid>
                             </Grid>
                             <Grid item style={{marginTop: 15}}>

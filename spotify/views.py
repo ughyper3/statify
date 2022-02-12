@@ -67,19 +67,30 @@ class RecentListenedSongs(APIView):
 
         songs_list = []
 
-        for song in response['items']:
-            songs_list.append({
-                'song_name': song['track']['name'],
-                'artist': song['track']['album']['artists'][0]['name'],
-                'played_at': song['played_at'],
-                'image': song['track']['album']['images'][0]['url'],
-                'format_date': date_parse(song['played_at'])
-            })
+        try:
+            for song in response['items']:
+                songs_list.append({
+                    'song_name': song['track']['name'],
+                    'artist': song['track']['album']['artists'][0]['name'],
+                    'played_at': song['played_at'],
+                    'image': song['track']['album']['images'][0]['url'],
+                    'format_date': date_parse(song['played_at'])
+                })
 
-        for song in songs_list:
-            if not Song.objects.filter(name=song['song_name'], artist=song['artist'], played_at=song['played_at']).exists():
-                insert_song = Song(name=song['song_name'], artist=song['artist'], played_at=song['played_at'])
-                insert_song.save()
+            for song in songs_list:
+                if not Song.objects.filter(name=song['song_name'], artist=song['artist'], played_at=song['played_at']).exists():
+                    insert_song = Song(name=song['song_name'], artist=song['artist'], played_at=song['played_at'])
+                    insert_song.save()
+        except KeyError:
+            songs_list = [
+                {
+                    'song_name': 'no song',
+                    'artist': '',
+                    'played_at': '',
+                    'image': '',
+                    'format_date': ''
+                }
+            ]
 
         return Response(songs_list[:10], status=status.HTTP_200_OK)
 
@@ -92,13 +103,22 @@ class UserProfile(APIView):
         if 'error' in response:
             return Response({}, status=status.HTTP_204_NO_CONTENT)
 
-        profile = {
-            'country': response['country'],
-            'display_name': response['display_name'],
-            'spotify_account': response['external_urls']['spotify'],
-            'followers': response['followers']['total'],
-            'image': response['images'][0]['url']
-        }
+        try:
+            profile = {
+                'country': response['country'],
+                'display_name': response['display_name'],
+                'spotify_account': response['external_urls']['spotify'],
+                'followers': response['followers']['total'],
+                'image': response['images'][0]['url']
+            }
+        except KeyError:
+            profile = {
+                'country': '',
+                'display_name': '',
+                'spotify_account': '',
+                'followers': '',
+                'image': ''
+            }
 
         return Response(profile, status=status.HTTP_200_OK)
 
@@ -112,13 +132,21 @@ class Playlist(APIView):
             return Response({}, status=status.HTTP_204_NO_CONTENT)
 
         playlists = []
-
-        for playlist in response['items']:
-            playlists.append({
-                'name': playlist['name'],
-                'image': playlist['images'][0]['url'],
-                'link': playlist['external_urls']['spotify']
-            })
+        try:
+            for playlist in response['items']:
+                playlists.append({
+                    'name': playlist['name'],
+                    'image': playlist['images'][0]['url'],
+                    'link': playlist['external_urls']['spotify']
+                })
+        except KeyError:
+            playlists = [
+                {
+                    "name": "No playlist",
+                    "image": "",
+                    "link": ""
+                }
+            ]
 
         return Response(playlists, status=status.HTTP_200_OK)
 
@@ -131,13 +159,23 @@ class CurrentlyPlayed(APIView):
         if 'error' in response:
             return Response({}, status=status.HTTP_204_NO_CONTENT)
 
-        current_song = {
-            'progress_ms': response['progress_ms'],
-            'song_name': response['item']['name'],
-            'artist_name': response['item']['album']['artists'][0]['name'],
-            'image': response['item']['album']['images'][0]['url'],
-            'duration_ms': response['item']['duration_ms']
-        }
-        current_song['percentage'] = get_percentage_of_progression(current_song['duration_ms'], current_song['progress_ms'])
+        try:
+            current_song = {
+                'progress_ms': response['progress_ms'],
+                'song_name': response['item']['name'],
+                'artist_name': response['item']['album']['artists'][0]['name'],
+                'image': response['item']['album']['images'][0]['url'],
+                'duration_ms': response['item']['duration_ms']
+            }
+            current_song['percentage'] = get_percentage_of_progression(current_song['duration_ms'], current_song['progress_ms'])
+        except KeyError:
+            current_song = {
+                "progress_ms": 0,
+                "song_name": "No song currently played",
+                "artist_name": "-",
+                "image": "",
+                "duration_ms": 0,
+                "percentage": 0
+            }
 
         return Response(current_song, status=status.HTTP_200_OK)
